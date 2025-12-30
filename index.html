@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A modern, browser-based color palette generator.">
+    <title>Color Palette Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div id="app_container">
+        <header class="main_header">
+            <div class="logo_section">
+                <i class="fa-solid fa-palette"></i>
+                <h1>Color Palette Generator</h1>
+            </div>
+
+            <div class="header_controls">
+                <div class="accessibility_controls">
+                    <label for="simulation_select" class="sr_only">Color-blind Simulation</label>
+                    <select id="simulation_select" title="Color-blind Simulation">
+                        <option value="none">Normal Vision</option>
+                        <option value="protanopia">Protanopia (Red-blind)</option>
+                        <option value="deuteranopia">Deuteranopia (Green-blind)</option>
+                        <option value="tritanopia">Tritanopia (Blue-blind)</option>
+                    </select>
+                    <button id="accessibility_help_btn" class="help_icon_btn" title="Accessibility Guide">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                </div>
+                <button id="theme_toggle_btn" class="icon_btn" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <a href="https://github.com/CommanderFoo/color-palette-generator" class="icon_btn github_link"
+                    target="_blank" title="View Source on GitHub">
+                    <i class="fa-brands fa-github"></i>
+                </a>
+            </div>
+        </header>
+        <main class="palette_workspace">
+            <div id="palette_container" class="palette_container">
+                <div class="empty_state">
+                    <p>Loading Palette...</p>
+                </div>
+            </div>
+        </main>
+        <section class="control_panel">
+            <div class="control_row">
+                <div class="control_group generation_controls">
+                    <div class="input_wrapper">
+                        <label for="base_color_input">Base Color</label>
+                        <div class="color_input_styled">
+                            <input type="color" id="base_color_input" value="#646cff">
+                            <span id="base_color_hex">#646cff</span>
+                        </div>
+                    </div>
+                    <div class="input_wrapper">
+                        <label for="harmony_select">
+                            Harmony
+                            <button id="help_btn" class="help_icon_btn" title="What are harmonies?">
+                                <i class="fa-solid fa-circle-question"></i>
+                            </button>
+                        </label>
+                        <select id="harmony_select">
+                            <option value="analogous">Analogous</option>
+                            <option value="monochromatic">Monochromatic</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="tetradic">Tetradic</option>
+                            <option value="complementary">Complementary</option>
+                            <option value="split_complementary">Split Complem.</option>
+                        </select>
+                    </div>
+                    <div class="input_wrapper">
+                        <label for="swatch_count_input">Swatches</label>
+                        <div class="stepper_control">
+                            <button id="remove_swatch_btn" class="stepper_btn" title="Remove Swatch">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <span id="swatch_count_display">5</span>
+                            <button id="add_swatch_btn" class="stepper_btn" title="Add Swatch">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button id="generate_btn" class="btn primary_btn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generate
+                    </button>
+                    <button id="random_btn" class="btn secondary_btn" title="Randomize Base Color">
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                </div>
+                <div class="control_divider"></div>
+                <div class="control_group action_controls">
+                    <button id="gradient_btn" class="btn outline_btn" title="Create Gradient">
+                        <i class="fa-solid fa-brush"></i> Gradient
+                    </button>
+                    <button id="open_image_extractor" class="btn outline_btn" title="Extract Palette from Image">
+                        <i class="fa-solid fa-image"></i> Extract
+                    </button>
+                    <button id="save_palette_btn" class="btn success_btn" title="Save Current Palette">
+                        <i class="fa-solid fa-bookmark"></i>
+                    </button>
+                    <button id="export_btn" class="btn outline_btn" title="Export Palette">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <button id="saved_palettes_btn" class="btn outline_btn" title="View Saved Palettes">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <div id="export_modal" class="modal">
+            <div class="modal_content">
+                <div class="modal_header">
+                    <h2>Export Palette</h2>
+                    <button class="close_modal_btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal_body">
+                    <div class="export_options">
+                        <button class="export_action" data-format="hex"><i class="fa-solid fa-hashtag"></i> Copy
+                            HEX</button>
+                        <button class="export_action" data-format="rgb"><i class="fa-solid fa-circle-half-stroke"></i>
+                            Copy RGB</button>
+                        <button class="export_action" data-format="hsl"><i class="fa-solid fa-sliders"></i> Copy
+                            HSL</button>
+                        <button class="export_action" data-format="css"><i class="fa-brands fa-css3-alt"></i> Copy CSS
+                            Variables</button>
+                        <button class="export_action" data-format="png"><i class="fa-solid fa-image"></i> Download
+                            PNG</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="saved_palettes_modal" class="modal">
+            <div class="modal_content modal_lg">
+                <div class="modal_header">
+                    <h2>Saved Palettes</h2>
+                    <button class="close_modal_btn" data-modal="saved_palettes_modal"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal_body">
+                    <div id="saved_palettes_list" class="saved_palettes_list">
+                        <!-- Dynamically populated -->
+                        <p class="empty_list_message">No saved palettes yet. Click "Save" to add one!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="save_palette_modal" class="modal">
+            <div class="modal_content modal_sm">
+                <div class="modal_header">
+                    <h2>Save Palette</h2>
+                    <button class="close_modal_btn" data-modal="save_palette_modal"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal_body">
+                    <div class="input_wrapper full_width">
+                        <input type="text" id="palette_name_input" placeholder="My Awesome Palette" maxlength="50">
+                    </div>
+                    <button id="confirm_save_btn" class="btn primary_btn full_width">
+                        <i class="fa-solid fa-check"></i> Save Palette
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="help_modal" class="modal">
+            <div class="modal_content modal_lg">
+                <div class="modal_header">
+                    <h2><i class="fa-solid fa-palette"></i> Color Harmonies</h2>
+                    <button class="close_modal_btn" data-modal="help_modal"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal_body">
+                    <div class="harmony_list">
+                        <div class="harmony_item">
+                            <h3>Analogous</h3>
+                            <p>Colors that sit next to each other on the color wheel. Creates a serene, comfortable
+                                design with low contrast. Great for nature themes.</p>
+                            <div class="harmony_preview"
+                                style="background: linear-gradient(90deg, #ff6b6b, #ffa94d, #ffd43b);"></div>
+                        </div>
+                        <div class="harmony_item">
+                            <h3>Monochromatic</h3>
+                            <p>Different shades, tints, and tones of a single hue. Creates a cohesive, elegant look with
+                                subtle variations.</p>
+                            <div class="harmony_preview"
+                                style="background: linear-gradient(90deg, #1a365d, #2b6cb0, #63b3ed);"></div>
+                        </div>
+                        <div class="harmony_item">
+                            <h3>Triadic</h3>
+                            <p>Three colors equally spaced on the color wheel (120° apart). Offers vibrant contrast
+                                while maintaining balance.</p>
+                            <div class="harmony_preview"
+                                style="background: linear-gradient(90deg, #e53e3e, #38a169, #3182ce);"></div>
+                        </div>
+                        <div class="harmony_item">
+                            <h3>Tetradic</h3>
+                            <p>Four colors forming a rectangle on the wheel (90° apart). Rich color scheme that works
+                                best with one dominant color.</p>
+                            <div class="harmony_preview"
+                                style="background: linear-gradient(90deg, #9f7aea, #ed64a6, #ecc94b, #48bb78);"></div>
+                        </div>
+                        <div class="harmony_item">
+                            <h3>Complementary</h3>
+                            <p>Two colors directly opposite each other on the wheel. Creates high contrast and visual
+                                tension—great for making elements pop.</p>
+                            <div class="harmony_preview" style="background: linear-gradient(90deg, #4299e1, #ed8936);">
+                            </div>
+                        </div>
+                        <div class="harmony_item">
+                            <h3>Split Complementary</h3>
+                            <p>A base color plus the two colors adjacent to its complement. Strong contrast with less
+                                tension than pure complementary.</p>
+                            <div class="harmony_preview"
+                                style="background: linear-gradient(90deg, #667eea, #f6ad55, #fc8181);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="accessibility_help_modal" class="modal">
+            <div class="modal_content modal_lg">
+                <div class="modal_header">
+                    <h2><i class="fa-solid fa-universal-access"></i> Accessibility Guide</h2>
+                    <button class="close_modal_btn" data-modal="accessibility_help_modal"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal_body">
+                    <div class="guide_section">
+                        <h3>WCAG Contrast Requirements</h3>
+                        <p>The Web Content Accessibility Guidelines (WCAG) define minimum contrast ratios to ensure text
+                            is readable for people with low vision.</p>
+                        <div class="compliance_list">
+                            <div class="compliance_item badge_aaa">
+                                <strong>AAA (7:1+)</strong>
+                                <span>Enhanced contrast. Best for body text and critical UI elements.</span>
+                            </div>
+                            <div class="compliance_item badge_aa">
+                                <strong>AA (4.5:1+)</strong>
+                                <span>Minimum for normal text (14pt). Required for WCAG 2.1 Level AA.</span>
+                            </div>
+                            <div class="compliance_item badge_fail">
+                                <strong>Fail (&lt;4.5:1)</strong>
+                                <span>Insufficient contrast. Text may be hard to read for many users.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="guide_section">
+                        <h3>Why Colors Fail</h3>
+                        <p>Colors fail when there isn't enough luminance difference between foreground and background.
+                            Common issues:</p>
+                        <ul>
+                            <li><strong>Light on light</strong> — Pastel text on white backgrounds</li>
+                            <li><strong>Dark on dark</strong> — Dark gray text on black backgrounds</li>
+                            <li><strong>Similar hues</strong> — Colors that look different but have similar brightness
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="guide_section">
+                        <h3>Color-Blind Simulations</h3>
+                        <p>About 8% of men and 0.5% of women have some form of color vision deficiency:</p>
+                        <ul>
+                            <li><strong>Protanopia</strong> — Reduced sensitivity to red light</li>
+                            <li><strong>Deuteranopia</strong> — Reduced sensitivity to green light</li>
+                            <li><strong>Tritanopia</strong> — Reduced sensitivity to blue light (rare)</li>
+                        </ul>
+                        <p>Use simulations to ensure your palette is distinguishable for all users.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="gradient_modal" class="modal">
+            <div class="modal_content modal_xl">
+                <div class="modal_header">
+                    <h2><i class="fa-solid fa-brush"></i> Gradient Builder</h2>
+                    <div class="header_actions">
+                        <button id="open_gradient_library" class="icon_btn" title="Gradient Library">
+                            <i class="fa-solid fa-layer-group"></i>
+                        </button>
+                        <button id="save_gradient_btn" class="icon_btn" title="Save Gradient">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                        </button>
+                        <button class="close_modal_btn" data-modal="gradient_modal"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="modal_body gradient_builder">
+                    <div class="gradient_left_column">
+                        <div class="gradient_preview_section">
+                            <div id="gradient_preview" class="gradient_preview"></div>
+                            <div class="gradient_css_output">
+                                <code
+                                    id="gradient_css_code">background: linear-gradient(90deg, #646cff, #ff6b6b);</code>
+                                <button id="copy_gradient_css" class="btn primary_btn" title="Copy CSS">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                                <button id="open_gradient_export" class="btn primary_btn" title="Export Gradient">
+                                    <i class="fa-solid fa-file-export"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="gradient_control_group">
+                            <label>Available Colors (click to add)</label>
+                            <div id="available_palette_colors" class="available_palette_colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="gradient_controls_section">
+                        <div class="gradient_control_group">
+                            <label>Type</label>
+                            <div class="toggle_group">
+                                <button class="toggle_btn active" data-type="linear">Linear</button>
+                                <button class="toggle_btn" data-type="radial">Radial</button>
+                            </div>
+                        </div>
+                        <div class="gradient_control_group" id="angle_control_group">
+                            <label for="gradient_angle">Angle</label>
+                            <div class="angle_input_group">
+                                <input type="range" id="gradient_angle" min="0" max="360" value="90">
+                                <span id="angle_value">90°</span>
+                            </div>
+                            <div class="preset_angles">
+                                <button class="angle_preset" data-angle="0" title="Top to Bottom">↓</button>
+                                <button class="angle_preset" data-angle="90" title="Left to Right">→</button>
+                                <button class="angle_preset" data-angle="180" title="Bottom to Top">↑</button>
+                                <button class="angle_preset" data-angle="270" title="Right to Left">←</button>
+                                <button class="angle_preset" data-angle="45" title="Diagonal">↘</button>
+                                <button class="angle_preset" data-angle="135" title="Diagonal">↙</button>
+                            </div>
+                        </div>
+                        <div class="gradient_control_group">
+                            <label>Gradient Colors (drag to reorder)</label>
+                            <div id="gradient_colors" class="gradient_colors">
+                            </div>
+                            <div class="transparency_controls">
+                                <button id="add_fade_start" class="fade_btn" title="Add transparent at start">
+                                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Fade In
+                                </button>
+                                <button id="add_fade_end" class="fade_btn" title="Add transparent at end">
+                                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Fade Out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="save_gradient_modal" class="modal">
+        <div class="modal_content modal_sm">
+            <div class="modal_header">
+                <h2>Save Gradient</h2>
+                <button class="close_modal_btn" data-modal="save_gradient_modal"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal_body">
+                <div class="input_wrapper full_width">
+                    <input type="text" id="gradient_name_input" placeholder="My Awesome Gradient" maxlength="50">
+                </div>
+                <button id="confirm_save_gradient_btn" class="btn primary_btn full_width">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Gradient
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="saved_gradients_modal" class="modal">
+        <div class="modal_content modal_lg">
+            <div class="modal_header">
+                <h2>Gradient Library</h2>
+                <button class="close_modal_btn" data-modal="saved_gradients_modal"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal_body">
+                <div id="saved_gradients_list" class="saved_gradients_list">
+                    <p class="empty_list_message">No saved gradients yet. Click "Save" to add one!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="export_gradient_modal" class="modal">
+        <div class="modal_content modal_sm">
+            <div class="modal_header">
+                <h2>Export Gradient</h2>
+                <button class="close_modal_btn" data-modal="export_gradient_modal"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal_body">
+                <div class="export_options_grid">
+                    <button class="export_gradient_action" data-format="css_full">
+                        <i class="fa-brands fa-css3-alt"></i> Copy CSS (Full)
+                    </button>
+                    <button class="export_gradient_action" data-format="css_value">
+                        <i class="fa-solid fa-code"></i> Copy CSS (Value)
+                    </button>
+                    <button class="export_gradient_action" data-format="png">
+                        <i class="fa-solid fa-image"></i> Download PNG
+                    </button>
+                    <button class="export_gradient_action" data-format="svg">
+                        <i class="fa-solid fa-file-code"></i> Download SVG
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="image_extractor_modal" class="modal">
+        <div class="modal_content modal_lg">
+            <div class="modal_header">
+                <h2><i class="fa-solid fa-image"></i> Image Palette Extractor</h2>
+                <button class="close_modal_btn" data-modal="image_extractor_modal"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal_body image_extractor_grid">
+                <div class="extractor_left">
+                    <div id="image_drop_zone" class="image_drop_zone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p>Drag & Drop Image or Click to Upload</p>
+                        <input type="file" id="image_input" accept="image/*" hidden>
+                    </div>
+                    <div id="extractor_preview_container" class="extractor_preview_container hidden">
+                        <img id="extractor_image_preview" src="" alt="Preview">
+                        <button id="remove_image_btn" class="icon_btn remove_image_btn" title="Remove Image">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="extractor_right">
+                    <div class="extractor_settings">
+                        <div class="control_group">
+                            <label for="extraction_color_count">Extract: <span
+                                    id="extraction_count_val">8</span></label>
+                            <input type="range" id="extraction_color_count" min="3" max="16" value="8">
+                        </div>
+                        <button id="extract_palette_btn" class="btn primary_btn full_width extract_palette_btn"
+                            disabled>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Extract Palette
+                        </button>
+                    </div>
+                    <div class="extracted_palette_preview">
+                        <label>Extracted Colors</label>
+                        <div id="extracted_swatches" class="extracted_swatches">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal_footer extracted_footer">
+                <button id="apply_extracted_palette" class="btn success_btn full_width" disabled>
+                    Use Palette
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
