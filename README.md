@@ -1,5 +1,7 @@
 # Color Palette & Gradient Tool Generator
 
+https://commanderfoo.github.io/color-palette-generator/
+
 A client-side web application designed for designers, and developers to create, refine, and export color palettes and gradients.
 
 ![](images/preview.png)
